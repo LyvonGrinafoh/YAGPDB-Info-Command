@@ -1,0 +1,39 @@
+{{/* Reccomended Trigger:(StartsWith) !!info */}}
+{{deleteTrigger 0}}
+{{$color := randInt 1 16777215}}
+{{$userMEN := .User}}
+{{$dbXP := "user_LVL"}}
+{{$newhorario := currentTime.Add (toDuration (mult -3 .TimeHour))}}
+{{$t_S := $newhorario.Format "02 January 2006 15:04"}}
+ 
+{{if .CmdArgs}}
+{{$userMEN = (userArg (index .CmdArgs 0))}}
+{{$val := toInt64 ((dbGet $userMEN.ID $dbXP).Value)}}
+{{$embed := cembed
+	"title" (joinStr "" "Informações do `" $userMEN.String "`")
+	"fields" (cslice
+		 (sdict "name" "Nick: " "value" $userMEN.String "inline" false)
+		 (sdict "name" "ID: " "value" (toString $userMEN.ID) "inline" false)
+		 (sdict "name" "Horário: " "value" $t_S "inline" false)
+		 (sdict "name" "Pontos de upgrade:" "value" (joinStr "" $val) "inline" false)
+		)
+	"thumbnail" (sdict "url" ($userMEN.AvatarURL "256"))
+	"color" $color
+	"footer" (sdict "text" "Servidor do Lyvon™. Todos os direitos reservados." "icon_url" "https://cdn.discordapp.com/attachments/791127649849180160/826171947376705546/logo_discord000.gif")}}
+{{deleteMessage nil (sendMessageRetID nil $embed) 10}}
+{{else}}
+{{$val := toInt64 ((dbGet $userMEN.ID $dbXP).Value)}}
+{{$embed := cembed
+	"title" (joinStr "" "Informações do `" $userMEN.String "`")
+	"fields" (cslice
+		 (sdict "name" "Nick: " "value" $userMEN.String "inline" false)
+		 (sdict "name" "ID: " "value" (toString $userMEN.ID) "inline" false)
+		 (sdict "name" "Horário: " "value" $t_S "inline" false)
+		 (sdict "name" "Idade da conta:" "value" currentUserAgeHuman "inline" false)
+		 (sdict "name" "Pontos de upgrade:" "value" (joinStr "" $val) "inline" false)
+		)
+	"thumbnail" (sdict "url" ($userMEN.AvatarURL "256"))
+	"color" $color
+	"footer" (sdict "text" "Servidor do Lyvon™. Todos os direitos reservados." "icon_url" "https://cdn.discordapp.com/attachments/791127649849180160/826171947376705546/logo_discord000.gif")}}
+{{deleteMessage nil (sendMessageRetID nil $embed) 10}}
+{{end}}
